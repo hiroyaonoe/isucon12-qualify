@@ -1,0 +1,29 @@
+- name: Install required lib
+  become: yes
+  apt:
+    name:
+      - libdbd-mysql-perl
+      - libdbi-perl
+      - libio-socket-ssl-perl
+      - libnet-ssleay-perl
+      - libterm-readkey-perl
+
+- name: Make tmp dir
+  file:
+    path: /home/isucon/tmp
+    state: directory
+
+- name: Download pt-query-digest
+  get_url:
+    url: https://downloads.percona.com/downloads/percona-toolkit/3.3.1/binary/debian/focal/x86_64/percona-toolkit_3.3.1-1.focal_amd64.deb
+    dest: /home/isucon/tmp
+
+- name: Install pt-query-digest
+  become: yes
+  apt:
+    deb: /home/isucon/tmp/percona-toolkit_3.3.1-1.focal_amd64.deb
+
+- name: Remove tmp dir
+  file:
+    path: /home/isucon/tmp
+    state: absent

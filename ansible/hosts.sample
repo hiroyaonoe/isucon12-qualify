@@ -1,0 +1,16 @@
+[bench]
+192.0.2.1
+
+[webapp1]
+192.0.2.2
+
+[webapp2]
+192.0.2.3
+
+[webapp3]
+192.0.2.4
+
+[webapp:children]
+webapp1
+webapp2
+webapp3

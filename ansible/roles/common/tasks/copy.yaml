@@ -1,0 +1,37 @@
+- name: Find etc dirs
+  find:
+    paths:
+      - /home/isucon/webapp/etc
+    recurse: yes
+    file_type: directory
+  register: find_dir_result
+
+- name: Make etc dirs
+  become: yes
+  file:
+    path: "{{ item.path | replace('/home/isucon/webapp/', '/')}}"
+    state: directory
+  with_items:
+    - "{{ find_dir_result.files }}"
+
+- name: Find etc files
+  find:
+    paths:
+      - /home/isucon/webapp/etc
+    recurse: yes
+  register: find_file_result
+
+- name: Copy etc files
+  become: yes
+  copy:
+    src:  "{{ item.path }}"
+    dest: "{{ item.path | replace('/home/isucon/webapp/', '/')}}"
+    remote_src: yes
+  with_items:
+    - "{{ find_file_result.files }}"
+
+- name: Copy env.sh
+  copy:
+    src: /home/isucon/webapp/env.sh
+    dest: /home/isucon/env.sh
+    remote_src: yes

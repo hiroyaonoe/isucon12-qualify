@@ -1,0 +1,6 @@
+- name: Stop jiaapi-mock.service
+  become: yes
+  systemd:
+    name: jiaapi-mock.service
+    state: stopped
+    enabled: no

@@ -1,0 +1,11 @@
+- name: Restart mysql(mariadb)
+  become: yes
+  systemd:
+    name: mysql.service
+    state: restarted
+
+- name: Allow mysql to access remotely
+  become: yes
+  shell:
+    cmd: echo "GRANT all ON *.* TO isucon@\"%\" identified by 'isucon' with grant option;" | sudo mysql --defaults-file=/dev/null
+
