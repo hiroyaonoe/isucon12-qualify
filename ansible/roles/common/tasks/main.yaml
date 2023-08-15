@@ -1,8 +1,0 @@
-- name: Include apt.yaml
-  include: apt.yaml
-
-- name: Include git-clone.yaml
-  include: git-clone.yaml
-
-- name: Include copy.yaml
-  include: copy.yaml

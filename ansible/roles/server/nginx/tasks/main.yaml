@@ -1,5 +1,0 @@
-- name: Restart nginx
-  become: yes
-  systemd:
-    name: nginx.service
-    state: restarted
