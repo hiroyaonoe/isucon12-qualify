@@ -79,6 +79,7 @@ jobs:
           echo 'allow_ssh_cidr = "0.0.0.0/0"' >> terraform.tfvars
           echo 'server_instance_type = "${{ env.server_instance_type }}"' >> terraform.tfvars
           echo 'benchmark_instance_type = "${{ env.benchmark_instance_type }}"' >> terraform.tfvars
+          echo 'project_name = "${{ github.repository }}"' >> terraform.tfvars
           terraform init
           terraform validate
           terraform apply -auto-approve --parallelism=20
