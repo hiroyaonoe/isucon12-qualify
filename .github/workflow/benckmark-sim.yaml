@@ -1,26 +1,32 @@
-name: run benchmark
+name: Run benchmark in a simulation environment
 
 on:
   issue_comment:
     types:
       - created
 
+env:
+  server_instance_type: c5.large
+  bechmark_instance_type: c4.xlarge
+  repository_path: ./webapp
+  service_name: isucondition
+
 jobs:
-  run-bench:
-    if: (github.event.issue.pull_request != null) && (contains(github.event.comment.body, '/bench'))
+  benchmark:
+    if: (github.event.issue.pull_request != null) && (contains(github.event.comment.body, '/benchmark'))
     runs-on: ubuntu-latest
 
     outputs:
-      bench-result: ${{ steps.bench.outputs.result }}
-      webapp1-result: ${{ steps.webapp1.outputs.result }}
-      webapp2-result: ${{ steps.webapp2.outputs.result }}
-      webapp3-result: ${{ steps.webapp3.outputs.result }}
-      head-commit-hash: ${{ steps.get-commit-head.outputs.hash }}
+      benchmark-result: ${{ steps.benchmark.outputs.result }}
+      server1-result: ${{ steps.server1.outputs.result }}
+      server2-result: ${{ steps.server2.outputs.result }}
+      server3-result: ${{ steps.server3.outputs.result }}
+      target-head-hash: ${{ steps.get-target-head.outputs.hash }}
 
     steps:
-      - name: Get PR's branch
-        uses: actions/github-script@v2
-        id: get-target-branch
+      - name: Get the head of PR
+        uses: actions/github-script@v6
+        id: get-target-head
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           result-encoding: string
@@ -33,9 +39,9 @@ jobs:
             return pull_request.data.head.ref
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
-          ref: ${{ steps.get-target-branch.outputs.result }}
+          ref: ${{ steps.get-target-head.outputs.result }}
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -64,43 +70,44 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.1.0
+          terraform_version: 1.5.5
 
+      # TODO: server/benchmark_instance_type in tfvars
       - name: Apply terraform
         working-directory: ./terraform
         run: |
           echo 'allow_ssh_cidr = "0.0.0.0/0"' >> terraform.tfvars
-          echo 'webapp_instance_type = "c5.large"' >> terraform.tfvars
-          echo 'bench_instance_type = "c4.xlarge"' >> terraform.tfvars
+          echo 'server_instance_type = "${{ env.server_instance_type }}"' >> terraform.tfvars
+          echo 'benchmark_instance_type = "${{ env.benchmark_instance_type }}"' >> terraform.tfvars
           terraform init
           terraform validate
           terraform apply -auto-approve --parallelism=20
 
-      - name: Get ip addresses
-        id: get-ip-addresses
+      - name: Get IP addresses
+        id: get-ip-addr
         working-directory: ./terraform
         run: |
-          bench_ip=$(cat terraform.tfstate | jq .outputs.bench_public_ip.value | tr -d '"')
-          webapp1_ip=$(cat terraform.tfstate | jq .outputs.webapp1_public_ip.value | tr -d '"')
-          webapp2_ip=$(cat terraform.tfstate | jq .outputs.webapp2_public_ip.value | tr -d '"')
-          webapp3_ip=$(cat terraform.tfstate | jq .outputs.webapp3_public_ip.value | tr -d '"')
-          echo "::add-mask::$bench_ip"
-          echo "::add-mask::$webapp1_ip"
-          echo "::add-mask::$webapp2_ip"
-          echo "::add-mask::$webapp3_ip"
-          echo "::set-output name=bench_ip::$bench_ip"
-          echo "::set-output name=webapp1_ip::$webapp1_ip"
-          echo "::set-output name=webapp2_ip::$webapp2_ip"
-          echo "::set-output name=webapp3_ip::$webapp3_ip"
+          benchmark_ip=$(cat terraform.tfstate | jq .outputs.benchmark_public_ip.value | tr -d '"')
+          server1_ip=$(cat terraform.tfstate | jq .outputs.server1_public_ip.value | tr -d '"')
+          server2_ip=$(cat terraform.tfstate | jq .outputs.server2_public_ip.value | tr -d '"')
+          server3_ip=$(cat terraform.tfstate | jq .outputs.server3_public_ip.value | tr -d '"')
+          echo "::add-mask::$benchmark_ip"
+          echo "::add-mask::$server1_ip"
+          echo "::add-mask::$server2_ip"
+          echo "::add-mask::$server3_ip"
+          echo "benchmark_ip=$benchmark_ip" >> "$GITHUB_OUTPUT"
+          echo "server1_ip=$server1_ip" >> "$GITHUB_OUTPUT"
+          echo "server2_ip=$server2_ip" >> "$GITHUB_OUTPUT"
+          echo "server3_ip=$server3_ip" >> "$GITHUB_OUTPUT"
 
       # instanceを立てた直後はuser_dataのスクリプト実行が完了していない可能性があるのでsshの疎通確認をする
       - name: Check ssh
         run: |
-          bench_ip=${{ steps.get-ip-addresses.outputs.bench_ip }}
-          webapp1_ip=${{ steps.get-ip-addresses.outputs.webapp1_ip }}
-          webapp2_ip=${{ steps.get-ip-addresses.outputs.webapp2_ip }}
-          webapp3_ip=${{ steps.get-ip-addresses.outputs.webapp3_ip }}
-          for ip in $bench_ip $webapp1_ip $webapp2_ip $webapp3_ip; do
+          benchmark_ip=${{ steps.get-ip-addr.outputs.benchmark_ip }}
+          server1_ip=${{ steps.get-ip-addr.outputs.server1_ip }}
+          server2_ip=${{ steps.get-ip-addr.outputs.server2_ip }}
+          server3_ip=${{ steps.get-ip-addr.outputs.server3_ip }}
+          for ip in $benchmark_ip $server1_ip $server2_ip $server3_ip; do
             for i in `seq 10`; do
               echo $i
               result=0
@@ -115,81 +122,86 @@ jobs:
           done
 
       - name: Run ansible-playbook
+        working-directory: ./ansible
         run: |
-          echo 'git_branch_name: ${{ steps.get-target-branch.outputs.result }}' > ansible/group_vars/all/git_branch_name.yaml
-          make ansible
+          echo 'git_branch_name: ${{ steps.get-target-head.outputs.result }}' > group_vars/all/git_branch_name.yaml
+          ansible-playbook site.yaml -vv
 
-      - name: Run bench
-        id: bench
+      - name: Run benchmark
+        id: benchmark
         run: |
-          ssh isucon@${{ steps.get-ip-addresses.outputs.bench_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./webapp/script/run-bench.sh > bench_result.txt
-          bench_result=$(cat bench_result.txt)
-          bench_result=${bench_result//$'\n'/\\n}
-          echo "::set-output name=result::$bench_result"
+          ssh isucon@${{ steps.get-ip-addr.outputs.benchmark_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.repository_path }}/script/benchmark.sh > benchmark_result.txt
+          result=$(cat benchmark_result.txt)
+          result=${result//$'\n'/\\n}
+          echo "result=$result" >> "$GITHUB_OUTPUT"
 
-      - name: Get metrics of webapp1
-        id: webapp1
+      - name: Get metrics of server1
+        id: server1
         run: |
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp1_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./webapp/script/alp.sh > webapp1_result.txt
-          
-          webapp1_result=$(cat webapp1_result.txt)
-          webapp1_result=${webapp1_result//$'\n'/\\n}
-          echo "::set-output name=result::$webapp1_result"
+          ssh isucon@${{ steps.get-ip-addr.outputs.server1_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.repository_path }}/script/analyze.sh > server1_result.txt
+          result=$(cat server1_result.txt)
+          result=${result//$'\n'/\\n}
+          echo "result=$result" >> "$GITHUB_OUTPUT"
 
-      - name: Get metrics of webapp2
-        id: webapp2
+      - name: Get metrics of server2
+        id: server2
         run: |
-          echo "MySQL\n" > webapp2_result.txt
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp2_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./webapp/script/slow-query-mysql.sh >> webapp2_result.txt
-          echo "\nRedis\n" >> webapp2_result.txt
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp2_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./webapp/script/slow-query-redis.sh >> webapp2_result.txt
-          
-          webapp2_result=$(cat webapp2_result.txt)
-          webapp2_result=${webapp2_result//$'\n'/\\n}
-          echo "::set-output name=result::$webapp2_result"
+          ssh isucon@${{ steps.get-ip-addr.outputs.server2_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.repository_path }}/script/analyze.sh > server2_result.txt
+          result=$(cat server2_result.txt)
+          result=${result//$'\n'/\\n}
+          echo "result=$result" >> "$GITHUB_OUTPUT"
 
-      - name: Get metrics of webapp3
-        id: webapp3
+      - name: Get metrics of server3
+        id: server3
         run: |
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp3_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./webapp/script/alp.sh > webapp3_result.txt
-          
-          webapp3_result=$(cat webapp3_result.txt)
-          webapp3_result=${webapp3_result//$'\n'/\\n}
-          echo "::set-output name=result::$webapp3_result"
+          ssh isucon@${{ steps.get-ip-addr.outputs.server3_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.repository_path }}/script/analyze.sh > server3_result.txt
+          result=$(cat server3_result.txt)
+          result=${result//$'\n'/\\n}
+          echo "result=$result" >> "$GITHUB_OUTPUT"
 
-      - name: Get other metrics of webapp1 for debug
+      - name: Get other metrics of server1 for debug
         run: |
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp1_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no <<- EOF
-          echo 'NEXT-WEBAPP1----------------------------------------------------------------'
-          sudo journalctl -u isucondition.go.service || echo 'FAILED 1'
+          ssh isucon@${{ steps.get-ip-addr.outputs.server1_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no <<- EOF
+          echo 'NEXT-SERVER1--------------------------------------------------------'
+          sudo journalctl -u ${{ env.service_name }}.go.service || echo 'FAILED 1'
           echo 'NEXT----------------------------------------------------------------'
           sudo journalctl -u nginx.service || echo 'FAILED 2'
           echo 'NEXT----------------------------------------------------------------'
           sudo cat /var/log/nginx/error.log || echo 'FAILED 3'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo journalctl -u mysql.service || echo 'FAILED 4'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo cat /var/log/mysql/error.log || echo 'FAILED 5'
           EOF
 
-      - name: Get other metrics of webapp2 for debug
+      - name: Get other metrics of server2 for debug
         run: |
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp2_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no <<- EOF
-          echo 'NEXT-WEBAPP2----------------------------------------------------------------'
-          sudo journalctl -u mysql.service || echo 'FAILED 1'
-          echo 'NEXT----------------------------------------------------------------'
-          sudo cat /var/log/mysql/error.log || echo 'FAILED 2'
-          echo 'NEXT----------------------------------------------------------------'
-          sudo journalctl -u redis.service || echo 'FAILED 3'
-          echo 'NEXT----------------------------------------------------------------'
-          sudo cat /var/log/redis/redis-server.log || echo 'FAILED 4'
-          EOF
-
-      - name: Get other metrics of webapp3 for debug
-        run: |
-          ssh isucon@${{ steps.get-ip-addresses.outputs.webapp3_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no <<- EOF
-          echo 'NEXT-WEBAPP3----------------------------------------------------------------'
-          sudo journalctl -u isucondition.go.service || echo 'FAILED 1'
+          ssh isucon@${{ steps.get-ip-addr.outputs.server2_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no <<- EOF
+          echo 'NEXT-SERVER2--------------------------------------------------------'
+          sudo journalctl -u ${{ env.service_name }}.go.service || echo 'FAILED 1'
           echo 'NEXT----------------------------------------------------------------'
           sudo journalctl -u nginx.service || echo 'FAILED 2'
           echo 'NEXT----------------------------------------------------------------'
           sudo cat /var/log/nginx/error.log || echo 'FAILED 3'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo journalctl -u mysql.service || echo 'FAILED 4'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo cat /var/log/mysql/error.log || echo 'FAILED 5'
+          EOF
+
+      - name: Get other metrics of server3 for debug
+        run: |
+          ssh isucon@${{ steps.get-ip-addr.outputs.server3_ip }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no <<- EOF
+          echo 'NEXT-SERVER3--------------------------------------------------------'
+          sudo journalctl -u ${{ env.service_name }}.go.service || echo 'FAILED 1'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo journalctl -u nginx.service || echo 'FAILED 2'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo cat /var/log/nginx/error.log || echo 'FAILED 3'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo journalctl -u mysql.service || echo 'FAILED 4'
+          echo 'NEXT----------------------------------------------------------------'
+          sudo cat /var/log/mysql/error.log || echo 'FAILED 5'
           EOF
 
       - name: Destroy terraform
@@ -198,13 +210,9 @@ jobs:
         run: |
           terraform destroy -auto-approve
 
-      - name: Get commit HEAD
-        id: get-commit-head
-        run: echo "::set-output name=hash::$(git rev-parse HEAD)"
-
-  comment-results:
+  comment:
     runs-on: ubuntu-latest
-    needs: run-bench
+    needs: benchmark
     steps:
       - name: Build result comment
         id: comment
@@ -212,42 +220,42 @@ jobs:
           comment=$(cat << EOF
           # Benchmark Result
           ## Target Commit
-          https://github.com/${{ github.repository }}/commit/${{ needs.run-bench.outputs.head-commit-hash }}
+          https://github.com/${{ github.repository }}/commit/${{ needs.benchmark.outputs.target-head-hash }}
           ## Result
           ### Benchmark
           <details>
 
           \`\`\`
-          ${{ needs.run-bench.outputs.bench-result }}
+          ${{ needs.benchmark.outputs.benchmark-result }}
           \`\`\`
 
           </details>
 
-          ### Alp of webapp1
+          ### Server1
           <details>
 
           \`\`\`
-          ${{ needs.run-bench.outputs.webapp1-result }}
+          ${{ needs.benchmark.outputs.server1-result }}
           \`\`\`
 
           </details>
 
-          ### Slow query of webapp2
+          ### Server2
           <details>
 
           \`\`\`
-          ${{ needs.run-bench.outputs.webapp2-result }}
+          ${{ needs.benchmark.outputs.server2-result }}
           \`\`\`
-          
+
           </details>
 
-          ### Alp of webapp3
+           ### Server3
           <details>
 
           \`\`\`
-          ${{ needs.run-bench.outputs.webapp3-result }}
+          ${{ needs.benchmark.outputs.server3-result }}
           \`\`\`
-          
+
           </details>
 
           EOF
@@ -255,9 +263,9 @@ jobs:
           
           comment=${comment//$'\n'/\\n}
           comment=${comment//$'`'/'\`'}
-          echo "::set-output name=comment::$comment"
+          echo "comment=$comment" >> "$GITHUB_OUTPUT"
 
-      - name: Comment results
+      - name: Comment
         uses: actions/github-script@v2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
