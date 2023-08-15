@@ -5,17 +5,6 @@
 
 - name: Clone this repo
   git:
-    repo: https://github.com/hiroyaonoe/isucon11-qualify.git
+    repo: https://github.com/hiroyaonoe/isucon12-qualify.git
     dest: /home/isucon/webapp
     version: "{{ git_branch_name }}"
-
-- name: Download files
-  get_url:
-    url: https://github.com/isucon/isucon11-qualify/releases/download/public/1_InitData.sql 
-    dest: /home/isucon/webapp/sql
-
-- name: Make icon dir
-  file:
-    path: /home/isucon/webapp/icon
-    state: directory
-    mode: '0777'

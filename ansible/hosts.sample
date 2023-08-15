@@ -1,16 +1,16 @@
 [bench]
 192.0.2.1
 
-[webapp1]
+[server1]
 192.0.2.2
 
-[webapp2]
+[server2]
 192.0.2.3
 
-[webapp3]
+[server3]
 192.0.2.4
 
-[webapp:children]
-webapp1
-webapp2
-webapp3
+[server:children]
+server1
+server2
+server3

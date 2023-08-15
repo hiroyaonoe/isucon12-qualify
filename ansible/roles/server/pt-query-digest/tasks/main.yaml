@@ -1,0 +1,5 @@
+- name: Install pt-query-digest
+  become: yes
+  apt:
+    name:
+      - percona-toolkit

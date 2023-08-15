@@ -6,6 +6,3 @@
 
 - name: Include copy.yaml
   include: copy.yaml
-
-- name: Include jiaapi-mock.yaml
-  include: jiaapi-mock.yaml

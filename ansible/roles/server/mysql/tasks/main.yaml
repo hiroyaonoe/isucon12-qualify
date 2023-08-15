@@ -1,4 +1,4 @@
-- name: Restart mysql(mariadb)
+- name: Restart mysql
   become: yes
   systemd:
     name: mysql.service
