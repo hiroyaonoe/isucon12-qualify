@@ -1,5 +1,5 @@
 locals {
-  enable                  = false # 使わない時はfalseに(必要ならamiとっておく)
+  enable                  = true # 使わない時はfalseに(必要ならamiとっておく)
   project_name            = "isucon12q"
   ami                     = "ami-0734085295d5c2e92"
   benchmark_instance_type = "t2.micro" # "c5.xlarge"
@@ -18,16 +18,6 @@ resource "aws_instance" "server1" {
   tags = {
     Name = "${local.project_name}-server1"
   }
-
-  ebs_optimized = "true"
-  root_block_device {
-    volume_size           = 20
-    volume_type           = "gp3"
-    delete_on_termination = true
-    tags = {
-      Name = "${local.project_name}-server1-ebs"
-    }
-  }
 }
 
 resource "aws_instance" "server2" {
@@ -41,16 +31,6 @@ resource "aws_instance" "server2" {
 
   tags = {
     Name = "${local.project_name}-server2"
-  }
-
-  ebs_optimized = "true"
-  root_block_device {
-    volume_size           = 20
-    volume_type           = "gp3"
-    delete_on_termination = true
-    tags = {
-      Name = "${local.project_name}-server1-ebs"
-    }
   }
 }
 
@@ -66,16 +46,6 @@ resource "aws_instance" "server3" {
   tags = {
     Name = "${local.project_name}-server3"
   }
-
-  ebs_optimized = "true"
-  root_block_device {
-    volume_size           = 20
-    volume_type           = "gp3"
-    delete_on_termination = true
-    tags = {
-      Name = "${local.project_name}-server1-ebs"
-    }
-  }
 }
 
 resource "aws_instance" "benchmark" {
@@ -89,16 +59,6 @@ resource "aws_instance" "benchmark" {
 
   tags = {
     Name = "${local.project_name}-benchmark"
-  }
-
-  ebs_optimized = "true"
-  root_block_device {
-    volume_size           = 20
-    volume_type           = "gp3"
-    delete_on_termination = true
-    tags = {
-      Name = "${local.project_name}-server1-ebs"
-    }
   }
 }
 
