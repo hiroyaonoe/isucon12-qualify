@@ -16,7 +16,7 @@ resource "aws_instance" "server1" {
   user_data              = file("${path.module}/init_instance.sh")
 
   tags = {
-    Name    = "${local.project_name}-server1"
+    Name = "${local.project_name}-server1"
   }
 
   ebs_optimized = "true"
@@ -25,7 +25,7 @@ resource "aws_instance" "server1" {
     volume_type           = "gp3"
     delete_on_termination = true
     tags = {
-      Name    = "${local.project_name}-server1-ebs"
+      Name = "${local.project_name}-server1-ebs"
     }
   }
 }
@@ -40,7 +40,7 @@ resource "aws_instance" "server2" {
   user_data              = file("${path.module}/init_instance.sh")
 
   tags = {
-    Name    = "${local.project_name}-server2"
+    Name = "${local.project_name}-server2"
   }
 
   ebs_optimized = "true"
@@ -49,7 +49,7 @@ resource "aws_instance" "server2" {
     volume_type           = "gp3"
     delete_on_termination = true
     tags = {
-      Name    = "${local.project_name}-server1-ebs"
+      Name = "${local.project_name}-server1-ebs"
     }
   }
 }
@@ -64,7 +64,7 @@ resource "aws_instance" "server3" {
   user_data              = file("${path.module}/init_instance.sh")
 
   tags = {
-    Name    = "${local.project_name}-server3"
+    Name = "${local.project_name}-server3"
   }
 
   ebs_optimized = "true"
@@ -73,7 +73,7 @@ resource "aws_instance" "server3" {
     volume_type           = "gp3"
     delete_on_termination = true
     tags = {
-      Name    = "${local.project_name}-server1-ebs"
+      Name = "${local.project_name}-server1-ebs"
     }
   }
 }
@@ -88,7 +88,7 @@ resource "aws_instance" "benchmark" {
   user_data              = file("${path.module}/init_instance.sh")
 
   tags = {
-    Name    = "${local.project_name}-benchmark"
+    Name = "${local.project_name}-benchmark"
   }
 
   ebs_optimized = "true"
@@ -97,7 +97,7 @@ resource "aws_instance" "benchmark" {
     volume_type           = "gp3"
     delete_on_termination = true
     tags = {
-      Name    = "${local.project_name}-server1-ebs"
+      Name = "${local.project_name}-server1-ebs"
     }
   }
 }
@@ -119,7 +119,7 @@ resource "aws_security_group" "isucon_allow_subnet" {
   }
 
   tags = {
-    Name    = "${local.project_name}-sg-subnet"
+    Name = "${local.project_name}-sg-subnet"
   }
 }
 
@@ -140,6 +140,6 @@ resource "aws_security_group" "isucon_allow_ssh" {
   }
 
   tags = {
-    Name    = "${local.project_name}-sg-ssh"
+    Name = "${local.project_name}-sg-ssh"
   }
 }
