@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'terraform/**'
+    paths:
+      - 'terraform/**'
 
 jobs:
   terraform:
@@ -39,11 +39,8 @@ jobs:
         id: get-ip-addr
         working-directory: ./terraform
         run: |
-          jq --version
           terraform-bin output -json -no-color > tfoutput.json # terraformコマンドだとGHAの出力も含まれてしまうのでterraform-binを使う
-          cat tfoutput.json
           enable=$(cat tfoutput.json | jq -r .enable.value)
-          echo $enable
           echo "enable=$enable" >> "$GITHUB_OUTPUT"
           if [ "$enable" = "true" ]; then
             benchmark_ip=$(cat tfoutput.json | jq -r .benchmark_public_ip.value)
