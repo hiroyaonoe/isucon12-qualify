@@ -5,8 +5,8 @@ resource "aws_vpc" "isucon" {
   enable_dns_support   = true
 
   tags = {
-    Name    = "${var.project_name}-vpc"
-    Project = var.project_name
+    Name    = "${local.project_name}-vpc"
+    Project = local.project_name
   }
 }
 
@@ -17,8 +17,8 @@ resource "aws_subnet" "isucon" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.project_name}-subnet"
-    Project = var.project_name
+    Name    = "${local.project_name}-subnet"
+    Project = local.project_name
   }
 }
 
@@ -26,8 +26,8 @@ resource "aws_internet_gateway" "isucon" {
   vpc_id = aws_vpc.isucon.id
 
   tags = {
-    Name    = "${var.project_name}-igw"
-    Project = var.project_name
+    Name    = "${local.project_name}-igw"
+    Project = local.project_name
   }
 }
 
@@ -35,8 +35,8 @@ resource "aws_route_table" "isucon" {
   vpc_id = aws_vpc.isucon.id
 
   tags = {
-    Name    = "${var.project_name}-rtb"
-    Project = var.project_name
+    Name    = "${local.project_name}-rtb"
+    Project = local.project_name
   }
 }
 
