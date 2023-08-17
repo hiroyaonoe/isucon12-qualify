@@ -153,3 +153,4 @@ resource "aws_security_group" "isucon_allow_ssh" {
     Project = local.project_name
   }
 }
+
