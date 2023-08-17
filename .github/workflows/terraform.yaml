@@ -40,8 +40,7 @@ jobs:
         working-directory: ./terraform
         run: |
           jq --version
-          terraform output -json -no-color > tfoutput.json
-          sed -e '1d' tfoutput.json
+          terraform output -json -no-color 1> tfoutput.json
           cat tfoutput.json
           enable=$(cat tfoutput.json | jq -r .enable.value)
           echo $enable
