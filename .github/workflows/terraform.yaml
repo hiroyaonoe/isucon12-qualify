@@ -40,17 +40,16 @@ jobs:
         working-directory: ./terraform
         run: |
           jq --version
-          tfoutput=$(terraform output -json -no-color)
-          echo $tfoutput
-          echo -e $tfoutput
-          enable=$(echo -e $tfoutput | jq .enable.value | tr -d '"')
+          terraform output -json -no-color > tfoutput.json
+          cat tfoutput.json
+          enable=$(cat tfoutput.json | jq -r .enable.value)
           echo $enable
           echo "enable=$enable" >> "$GITHUB_OUTPUT"
           if [ "$enable" = "true" ]; then
-            benchmark_ip=$(echo $tfoutput | jq .benchmark_public_ip.value | tr -d '"')
-            server1_ip=$(echo $tfoutput | jq .server1_public_ip.value | tr -d '"')
-            server2_ip=$(echo $tfoutput | jq .server2_public_ip.value | tr -d '"')
-            server3_ip=$(echo $tfoutput | jq .server3_public_ip.value | tr -d '"')
+            benchmark_ip=$(cat tfoutput.json | jq -r .benchmark_public_ip.value)
+            server1_ip=$(cat tfoutput.json | jq -r .server1_public_ip.value)
+            server2_ip=$(cat tfoutput.json | jq -r .server2_public_ip.value)
+            server3_ip=$(cat tfoutput.json | jq -r .server3_public_ip.value)
             echo "::add-mask::$benchmark_ip"
             echo "::add-mask::$server1_ip"
             echo "::add-mask::$server2_ip"
