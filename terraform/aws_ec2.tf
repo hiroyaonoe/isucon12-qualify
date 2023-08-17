@@ -1,5 +1,5 @@
 locals {
-  enable                  = false # 使わない時はfalseに(必要ならamiとっておく)
+  enable                  = true # 使わない時はfalseに(必要ならamiとっておく)
   project_name            = "isucon12q"
   ami                     = "ami-05c5b59deed48f66b"
   benchmark_instance_type = "t2.micro" # "c5.xlarge"
