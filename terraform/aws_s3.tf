@@ -1,5 +1,5 @@
 locals {
-	s3-bucket-name = "hiroyaonoe-${local.project_name}-tfstate"
+  s3-bucket-name = "hiroyaonoe-${local.project_name}-tfstate"
 }
 
 resource "aws_s3_bucket" "tfstate" {
