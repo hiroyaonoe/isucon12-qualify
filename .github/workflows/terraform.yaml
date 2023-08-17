@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'terraform/**'
+      - '.github/workflows/terraform.yaml'
 
 jobs:
   terraform:
@@ -76,7 +77,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "```Host isucon-benchmark\n  Hostname ${{ steps.get-ip-addr.outputs.benchmark_ip }}\nHost isucon-server1\n  Hostname ${{ steps.get-ip-addr.outputs.server1_ip }}\nHost isucon-server2\n  Hostname ${{ steps.get-ip-addr.outputs.server2_ip }}\nHost isucon-server3\n  Hostname ${{ steps.get-ip-addr.outputs.server3_ip }}\nHost isucon-*\n  User isucon```"
+                    "text": "```Host isucon-benchmark\n  Hostname ${{ steps.get-ip-addr.outputs.benchmark_ip }}\n\nHost isucon-server1\n  Hostname ${{ steps.get-ip-addr.outputs.server1_ip }}\n\nHost isucon-server2\n  Hostname ${{ steps.get-ip-addr.outputs.server2_ip }}\n\nHost isucon-server3\n  Hostname ${{ steps.get-ip-addr.outputs.server3_ip }}\n\nHost isucon-*\n  User isucon```"
                   }
                 }
               ]
