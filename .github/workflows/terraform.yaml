@@ -41,6 +41,7 @@ jobs:
         run: |
           jq --version
           terraform output -json -no-color > tfoutput.json
+          echo aaa
           cat tfoutput.json
           enable=$(cat tfoutput.json | jq -r .enable.value)
           echo $enable
