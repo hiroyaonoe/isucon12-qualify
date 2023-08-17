@@ -40,8 +40,9 @@ jobs:
         working-directory: ./terraform
         run: |
           enable=$(terraform output -json | jq .enable.value | tr -d '"')
+          echo $enable
           echo "enable=$enable" >> "$GITHUB_OUTPUT"
-          if [ $enable = "true" ]; then
+          if [ "$enable" = "true" ]; then
             benchmark_ip=$(terraform output -json | jq .benchmark_public_ip.value | tr -d '"')
             server1_ip=$(terraform output -json | jq .server1_public_ip.value | tr -d '"')
             server2_ip=$(terraform output -json | jq .server2_public_ip.value | tr -d '"')
