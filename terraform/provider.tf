@@ -8,3 +8,11 @@ provider "aws" {
     }
   }
 }
+
+terraform {
+  backend "s3" {
+    bucket = "hiroyaonoe-isucon12q-tfstate"
+    key    = "terraform.tfstate"
+    region = "ap-northeast-1"
+  }
+}
