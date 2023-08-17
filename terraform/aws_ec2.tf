@@ -1,9 +1,11 @@
 locals {
-  enable                  = true # 使わない時はfalseに(必要ならamiとっておく)
+  enable                  = false # 使わない時はfalseに(必要ならamiとっておく)
   project_name            = "isucon12q"
   ami                     = "ami-0734085295d5c2e92"
-  benchmark_instance_type = "t2.micro" # "c5.xlarge"
-  server_instance_type    = "t2.micro" # "c5.large"
+  # benchmark_instance_type = "t2.micro"
+  # server_instance_type    = "t2.micro"
+  benchmark_instance_type = "c5.xlarge"
+  server_instance_type    = "c5.large"
 }
 
 resource "aws_instance" "server1" {
