@@ -39,6 +39,7 @@ jobs:
         id: get-ip-addr
         working-directory: ./terraform
         run: |
+          jq --version
           tfoutput=$(terraform output -json -no-color)
           enable=$(echo $tfoutput | jq .enable.value | tr -d '"')
           echo $enable
