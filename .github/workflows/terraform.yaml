@@ -41,7 +41,9 @@ jobs:
         run: |
           jq --version
           tfoutput=$(terraform output -json -no-color)
-          enable=$(echo $tfoutput | jq .enable.value | tr -d '"')
+          echo $tfoutput
+          echo -e $tfoutput
+          enable=$(echo -e $tfoutput | jq .enable.value | tr -d '"')
           echo $enable
           echo "enable=$enable" >> "$GITHUB_OUTPUT"
           if [ "$enable" = "true" ]; then
