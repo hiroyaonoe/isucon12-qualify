@@ -39,6 +39,7 @@ jobs:
         id: get-ip-addr
         working-directory: ./terraform
         run: |
+          terraform output -json
           enable=$(terraform output -json | jq .enable.value | tr -d '"')
           echo $enable
           echo "enable=$enable" >> "$GITHUB_OUTPUT"
