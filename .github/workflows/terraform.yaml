@@ -39,13 +39,13 @@ jobs:
         id: get-ip-addr
         working-directory: ./terraform
         run: |
-          enable=$(terraform output -json | jq .outputs.enable.value | tr -d '"')
+          enable=$(terraform output -json | jq .enable.value | tr -d '"')
           echo "enable=$enable" >> "$GITHUB_OUTPUT"
           if [ $enable = "true" ]; then
-            benchmark_ip=$(terraform output -json | jq .outputs.benchmark_public_ip.value | tr -d '"')
-            server1_ip=$(terraform output -json | jq .outputs.server1_public_ip.value | tr -d '"')
-            server2_ip=$(terraform output -json | jq .outputs.server2_public_ip.value | tr -d '"')
-            server3_ip=$(terraform output -json | jq .outputs.server3_public_ip.value | tr -d '"')
+            benchmark_ip=$(terraform output -json | jq .benchmark_public_ip.value | tr -d '"')
+            server1_ip=$(terraform output -json | jq .server1_public_ip.value | tr -d '"')
+            server2_ip=$(terraform output -json | jq .server2_public_ip.value | tr -d '"')
+            server3_ip=$(terraform output -json | jq .server3_public_ip.value | tr -d '"')
             echo "::add-mask::$benchmark_ip"
             echo "::add-mask::$server1_ip"
             echo "::add-mask::$server2_ip"
