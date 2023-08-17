@@ -22,8 +22,8 @@ resource "aws_instance" "server1" {
 
   ebs_optimized = "true"
   root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
+    volume_size           = 20
+    volume_type           = "gp3"
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
@@ -48,8 +48,8 @@ resource "aws_instance" "server2" {
 
   ebs_optimized = "true"
   root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
+    volume_size           = 20
+    volume_type           = "gp3"
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
@@ -74,8 +74,8 @@ resource "aws_instance" "server3" {
 
   ebs_optimized = "true"
   root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
+    volume_size           = 20
+    volume_type           = "gp3"
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
@@ -100,8 +100,8 @@ resource "aws_instance" "benchmark" {
 
   ebs_optimized = "true"
   root_block_device {
-    volume_size = 20
-    volume_type = "gp3"
+    volume_size           = 20
+    volume_type           = "gp3"
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
