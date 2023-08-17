@@ -6,7 +6,6 @@ resource "aws_vpc" "isucon" {
 
   tags = {
     Name    = "${local.project_name}-vpc"
-    Project = local.project_name
   }
 }
 
@@ -18,7 +17,6 @@ resource "aws_subnet" "isucon" {
 
   tags = {
     Name    = "${local.project_name}-subnet"
-    Project = local.project_name
   }
 }
 
@@ -27,7 +25,6 @@ resource "aws_internet_gateway" "isucon" {
 
   tags = {
     Name    = "${local.project_name}-igw"
-    Project = local.project_name
   }
 }
 
@@ -36,7 +33,6 @@ resource "aws_route_table" "isucon" {
 
   tags = {
     Name    = "${local.project_name}-rtb"
-    Project = local.project_name
   }
 }
 

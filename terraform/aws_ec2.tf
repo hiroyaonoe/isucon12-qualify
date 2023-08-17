@@ -17,7 +17,6 @@ resource "aws_instance" "server1" {
 
   tags = {
     Name    = "${local.project_name}-server1"
-    Project = local.project_name
   }
 
   ebs_optimized = "true"
@@ -27,7 +26,6 @@ resource "aws_instance" "server1" {
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
-      Project = local.project_name
     }
   }
 }
@@ -43,7 +41,6 @@ resource "aws_instance" "server2" {
 
   tags = {
     Name    = "${local.project_name}-server2"
-    Project = local.project_name
   }
 
   ebs_optimized = "true"
@@ -53,7 +50,6 @@ resource "aws_instance" "server2" {
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
-      Project = local.project_name
     }
   }
 }
@@ -69,7 +65,6 @@ resource "aws_instance" "server3" {
 
   tags = {
     Name    = "${local.project_name}-server3"
-    Project = local.project_name
   }
 
   ebs_optimized = "true"
@@ -79,7 +74,6 @@ resource "aws_instance" "server3" {
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
-      Project = local.project_name
     }
   }
 }
@@ -95,7 +89,6 @@ resource "aws_instance" "benchmark" {
 
   tags = {
     Name    = "${local.project_name}-benchmark"
-    Project = local.project_name
   }
 
   ebs_optimized = "true"
@@ -105,7 +98,6 @@ resource "aws_instance" "benchmark" {
     delete_on_termination = true
     tags = {
       Name    = "${local.project_name}-server1-ebs"
-      Project = local.project_name
     }
   }
 }
@@ -128,7 +120,6 @@ resource "aws_security_group" "isucon_allow_subnet" {
 
   tags = {
     Name    = "${local.project_name}-sg-subnet"
-    Project = local.project_name
   }
 }
 
@@ -150,7 +141,5 @@ resource "aws_security_group" "isucon_allow_ssh" {
 
   tags = {
     Name    = "${local.project_name}-sg-ssh"
-    Project = local.project_name
   }
 }
-
