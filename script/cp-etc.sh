@@ -1,6 +1,7 @@
 #! /bin/bash -ex
 
-SERVER=$1
+SERVER=`hostname`
+echo "SERVER = ${SERVER}"
 
 if [ -z $SERVER ]; then
   echo "Please set SERVER"

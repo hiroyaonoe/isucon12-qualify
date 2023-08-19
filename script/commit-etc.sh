@@ -1,6 +1,7 @@
 #! /bin/bash -ex
 
-SERVER=$1 # 数字を指定
+SERVER=`hostname`
+echo "SERVER = ${SERVER}"
 directory=$2
 
 if [ -z $SERVER ]; then
