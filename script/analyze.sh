@@ -1,7 +1,16 @@
 #! /bin/bash -ex
 
+SERVER=`hostname`
+echo "SERVER = ${SERVER}"
+
+if [ -z $SERVER ]; then
+  echo "Please set SERVER"
+  exit 1
+fi
+
 DATE=`date +%Y-%m-%d_%H-%M-%S`
 
+mkdir -p "./${SERVER}/analyze"
 
 # alp
 ALPSORT=sum
@@ -12,10 +21,10 @@ if [ -n "${ALPM}" ]; then
 	ALPM="-m ${ALPM}"
 fi
 OUTFORMAT=count,method,uri,min,max,sum,avg,p99
-sudo cat /var/log/nginx/access.log | alp ltsv --sort $ALPSORT --reverse -o $OUTFORMAT $ALPM >> ./analyze/${DATE}_alp.txt
+sudo cat /var/log/nginx/access.log | alp ltsv --sort $ALPSORT --reverse -o $OUTFORMAT $ALPM >> ./${SERVER}/analyze/${DATE}_alp.txt
 
 
 # slow query
-sudo pt-query-digest /var/log/mysql/slow.log >> ./analyze/${DATE}_slow-query.txt
+sudo pt-query-digest /var/log/mysql/slow.log >> ./${SERVER}/analyze/${DATE}_slow-query.txt
 # 文字化け等でpt-query-digest使えない場合
 # sudo mysqldumpslow -s t | head -n 20 >> ./analyze/${DATE}_slow-query.txt
