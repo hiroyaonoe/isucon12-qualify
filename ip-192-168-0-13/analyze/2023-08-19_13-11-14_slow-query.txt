@@ -1,0 +1,46 @@
+
+# 120ms user time, 10ms system time, 28.52M rss, 31.59M vsz
+# Current date: Sat Aug 19 13:11:14 2023
+# Hostname: ip-192-168-0-13
+# Files: /var/log/mysql/slow.log
+# Overall: 2 total, 2 unique, 0 QPS, 0x concurrency ______________________
+# Time range: all events occurred at 2023-08-19T12:47:00
+# Attribute          total     min     max     avg     95%  stddev  median
+# ============     ======= ======= ======= ======= ======= ======= =======
+# Exec time           16ms     2us    16ms     8ms    16ms    11ms     8ms
+# Lock time              0       0       0       0       0       0       0
+# Rows sent              0       0       0       0       0       0       0
+# Rows examine           0       0       0       0       0       0       0
+# Query size            37      10      27   18.50      27   12.02   18.50
+
+# Profile
+# Rank Query ID                           Response time Calls R/Call V/M  
+# ==== ================================== ============= ===== ====== =====
+#    1 0x577B225755F9F47B35AAC71503957920 0.0162 100.0%     1 0.0162  0.00 FLUSH
+# MISC 0xMISC                              0.0000  0.0%     1 0.0000   0.0 <1 ITEMS>
+
+# Query 1: 0 QPS, 0x concurrency, ID 0x577B225755F9F47B35AAC71503957920 at byte 0
+# This item is included in the report because it matches --limit.
+# Scores: V/M = 0.00
+# Time range: all events occurred at 2023-08-19T12:47:00
+# Attribute    pct   total     min     max     avg     95%  stddev  median
+# ============ === ======= ======= ======= ======= ======= ======= =======
+# Count         50       1
+# Exec time     99    16ms    16ms    16ms    16ms    16ms       0    16ms
+# Lock time      0       0       0       0       0       0       0       0
+# Rows sent      0       0       0       0       0       0       0       0
+# Rows examine   0       0       0       0       0       0       0       0
+# Query size    27      10      10      10      10      10       0      10
+# String:
+# Hosts        localhost
+# Users        root
+# Query_time distribution
+#   1us
+#  10us
+# 100us
+#   1ms
+#  10ms  ################################################################
+# 100ms
+#    1s
+#  10s+
+FLUSH LOGS\G
