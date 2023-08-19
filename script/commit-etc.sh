@@ -13,3 +13,5 @@ for directory in $DIRECTORIES; do
   mkdir -p "./server${SERVER}"`dirname $directory`
   cp -ir "$directory" "./server${SERVER}$directory"
 done
+
+chmod -R 777 "./server${SERVER}"
