@@ -8,6 +8,9 @@
 .viminfo
 .sudo_as_admin_successful
 .wget-hsts
+.mysql_history
+
+go
 
 initial_data
 tmp
