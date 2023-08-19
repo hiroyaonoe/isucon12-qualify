@@ -16,7 +16,7 @@ mkdir -p "./${SERVER}/analyze"
 ALPSORT=sum
 # TODO: ALPM設定する(以下は参考例)
 # ALPM="/api/isu/.+/icon,/api/isu/.+/graph,/api/isu/.+/condition,/api/isu/[-a-z0-9]+,/api/condition/[-a-z0-9]+,/api/catalog/.+,/api/condition\?,/isu/........-....-.+"
-ALPM=
+ALPM="/api/organizer/player/.+/disqualified,/api/organizer/competition/.+/finish,/api/organizer/competition/.+/score,/api/player/player/.+,/api/player/competition/.+/ranking"
 if [ -n "${ALPM}" ]; then
 	ALPM="-m ${ALPM}"
 fi
