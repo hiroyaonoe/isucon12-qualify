@@ -8,8 +8,11 @@ ALPSORT=sum
 # TODO: ALPM設定する(以下は参考例)
 # ALPM="/api/isu/.+/icon,/api/isu/.+/graph,/api/isu/.+/condition,/api/isu/[-a-z0-9]+,/api/condition/[-a-z0-9]+,/api/catalog/.+,/api/condition\?,/isu/........-....-.+"
 ALPM=
+if [ -n $ALPM ]; then
+	ALPM="-m ${ALPM}"
+fi
 OUTFORMAT=count,method,uri,min,max,sum,avg,p99
-sudo cat /var/log/nginx/access.log | alp ltsv --sort $ALPSORT --reverse -o $OUTFORMAT -m $ALPM >> ./analyze/${DATE}_alp.txt
+sudo cat /var/log/nginx/access.log | alp ltsv --sort $ALPSORT --reverse -o $OUTFORMAT $ALPM >> ./analyze/${DATE}_alp.txt
 
 
 # slow query
