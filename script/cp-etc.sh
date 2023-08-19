@@ -8,7 +8,7 @@ if [ -z $SERVER ]; then
   exit 1
 fi
 
-cd server${SERVER}
+cd ${SERVER}
 find "etc" -type f | while read line; do
   cp -r "./$line" "/$line"
 done

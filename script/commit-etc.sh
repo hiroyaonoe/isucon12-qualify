@@ -9,7 +9,7 @@ if [ -z $SERVER ]; then
   exit 1
 fi
 
-mkdir -p "./server${SERVER}"`dirname $directory`
-cp -ir "$directory" "./server${SERVER}$directory"
+mkdir -p "./${SERVER}"`dirname $directory`
+cp -ir "$directory" "./${SERVER}$directory"
 
-chmod -R 777 "./server${SERVER}"
+chmod -R 777 "./${SERVER}"
