@@ -2,7 +2,7 @@
 
 SERVER=`hostname`
 echo "SERVER = ${SERVER}"
-directory=$2
+directory=$1
 
 if [ -z $SERVER ]; then
   echo "Please set SERVER"
