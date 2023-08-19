@@ -6,4 +6,5 @@ tar -zxvf alp_linux_amd64.tar.gz
 sudo install ./alp /usr/local/bin/alp
 
 # pt-query-digest
-sudo apt-get install percona-toolkit
+sudo apt-get update
+sudo apt-get install -y percona-toolkit

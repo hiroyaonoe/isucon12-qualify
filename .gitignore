@@ -7,6 +7,7 @@
 .ssh
 .viminfo
 .sudo_as_admin_successful
+.wget-hsts
 
 initial_data
 tmp
