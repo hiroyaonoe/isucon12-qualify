@@ -10,5 +10,6 @@ fi
 
 mkdir -p "server${SERVER}/etc"
 for directory in $DIRECTORIES; do
+  mkdir -p "./server${SERVER}"`dirname $directory`
   cp -ir "$directory" "./server${SERVER}$directory"
 done

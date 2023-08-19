@@ -1,0 +1,12 @@
+.bash*
+.cache
+.docker
+.hushlogin
+.lesshst
+.profile
+.ssh
+.viminfo
+.sudo_as_admin_successful
+
+initial_data
+tmp
