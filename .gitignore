@@ -15,3 +15,4 @@ go
 initial_data
 tmp
 webapp/go/isuports
+!webapp/go
