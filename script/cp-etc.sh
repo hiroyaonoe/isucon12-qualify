@@ -10,5 +10,5 @@ fi
 
 cd ${SERVER}
 find "etc" -type f | while read line; do
-  cp -r "./$line" "/$line"
+  sudo cp -r "./$line" "/$line"
 done
