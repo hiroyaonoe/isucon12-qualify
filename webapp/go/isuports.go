@@ -523,6 +523,14 @@ type BillingReport struct {
 	BillingYen        int64  `json:"billing_yen"`         // 合計請求金額
 }
 
+var (
+	cacheBillingReport = NewCache[BillingReport](CacheNoExpiration)
+)
+
+func cacheBillingReportKey(tenantID int64, competitionID string) string {
+	return fmt.Sprintf("tenant:%d:comp:%s", tenantID, competitionID)
+}
+
 type VisitHistoryRow struct {
 	PlayerID      string `db:"player_id"`
 	TenantID      int64  `db:"tenant_id"`
@@ -541,6 +549,11 @@ func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID i
 	comp, err := retrieveCompetition(ctx, tenantDB, competitonID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieveCompetition: %w", err)
+	}
+
+	cacheBRKey := cacheBillingReportKey(tenantID, competitonID)
+	if cacheBR, ok := cacheBillingReport.Get(cacheBRKey); ok {
+		return &cacheBR, nil
 	}
 
 	// ランキングにアクセスした参加者のIDを取得する
@@ -596,7 +609,7 @@ func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID i
 			}
 		}
 	}
-	return &BillingReport{
+	br := BillingReport{
 		CompetitionID:     comp.ID,
 		CompetitionTitle:  comp.Title,
 		PlayerCount:       playerCount,
@@ -604,7 +617,9 @@ func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID i
 		BillingPlayerYen:  100 * playerCount, // スコアを登録した参加者は100円
 		BillingVisitorYen: 10 * visitorCount, // ランキングを閲覧だけした(スコアを登録していない)参加者は10円
 		BillingYen:        100*playerCount + 10*visitorCount,
-	}, nil
+	}
+	cacheBillingReport.Set(cacheBRKey, br)
+	return &br, nil
 }
 
 type TenantWithBilling struct {
