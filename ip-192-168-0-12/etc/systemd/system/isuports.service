@@ -6,7 +6,7 @@ After=network.target
 WantedBy=multi-user.target
 
 [Service]
-Environment=ISUCON_DB_HOST=127.0.0.1
+Environment=ISUCON_DB_HOST=192.168.0.12
 Environment=ISUCON_DB_PORT=3306
 Environment=ISUCON_DB_USER=isucon
 Environment=ISUCON_DB_PASSWORD=isucon
