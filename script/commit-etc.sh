@@ -12,4 +12,4 @@ fi
 mkdir -p "./${SERVER}"`dirname $directory`
 cp -ir "$directory" "./${SERVER}$directory"
 
-chmod -R 777 "./${SERVER}"
+chmod -R 777 "./${SERVER}/etc"
